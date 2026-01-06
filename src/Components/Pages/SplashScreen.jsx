@@ -8,7 +8,7 @@ const SplashScreen = ({ onFinish }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (onFinish) onFinish();
-      navigate("/login");
+      navigate("/home");
     }, 3500); // Slightly longer to appreciate the animation
 
     return () => clearTimeout(timer);
