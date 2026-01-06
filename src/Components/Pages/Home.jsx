@@ -46,8 +46,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAF9] relative top-15 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F8FAF9] relative  relative overflow-hidden">
       {/* Decorative Background Pattern */}
+      <div className="relative top-15">
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: `radial-gradient(#059669 1px, transparent 1px)`, size: '30px 30px' }} />
 
@@ -131,6 +132,7 @@ const Home = () => {
         <footer className="mt-20 text-center py-10 border-t border-gray-100">
           <p className="text-gray-400 italic">"Prosperity through smart farming."</p>
         </footer>
+      </div>
       </div>
     </div>
   );

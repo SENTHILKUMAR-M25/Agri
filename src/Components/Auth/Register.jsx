@@ -1,41 +1,68 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Phone, ShieldCheck, CheckCircle, ArrowRight, Smartphone, Mail } from "lucide-react";
+import {
+  User,
+  Phone,
+  ShieldCheck,
+  CheckCircle,
+  ArrowRight,
+  Smartphone,
+  Mail,
+  ChevronLeft,
+  Sprout
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [robot, setRobot] = useState(false);
-  const [formData, setFormData] = useState({ name: "", mobile: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    mobile: "",
+    email: "",
+  });
+
+  const isFormValid = formData.name && formData.mobile.length >= 10 && formData.email.includes("@");
 
   const handleNext = () => {
-    if (!robot) {
-      alert("Please confirm you are a farmer (not a robot) 🤖");
-      return;
-    }
-    if (!formData.name || !formData.mobile) {
-      alert("Please fill in all details");
-      return;
-    }
+    if (!robot) return alert("Please confirm you are a farmer 🤖");
+    if (!isFormValid) return alert("Please complete all fields correctly");
     setStep(2);
   };
 
+  const handleSubmit = () => {
+    alert("Account created successfully ✅");
+    navigate("/login");
+  };
+
   return (
-    <div className="w-full">
-      {/* Progress Stepper */}
-      <div className="flex items-center justify-between mb-8 px-4">
+    <div className="w-full max-w-md mx-auto">
+      {/* 1. Creative Stepper with Shimmer */}
+      <div className="relative flex items-center justify-between mb-10 px-2">
+        <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ width: "0%" }}
+            animate={{ width: step === 1 ? "50%" : "100%" }}
+            className="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-700"
+          />
+        </div>
+        
         {[1, 2].map((i) => (
-          <div key={i} className="flex items-center flex-1 last:flex-none">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${
-              step >= i ? "bg-green-600 text-white shadow-lg shadow-green-200" : "bg-gray-200 text-gray-500"
-            }`}>
-              {step > i ? <CheckCircle size={18} /> : i}
-            </div>
-            {i === 1 && (
-              <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-500 ${
-                step > 1 ? "bg-green-600" : "bg-gray-200"
-              }`} />
-            )}
+          <div key={i} className="relative z-10 flex flex-col items-center">
+            <motion.div
+              animate={{ 
+                scale: step === i ? 1.2 : 1,
+                backgroundColor: step >= i ? "#16a34a" : "#f3f4f6"
+              }}
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-xl transition-colors duration-500`}
+            >
+              {step > i ? <CheckCircle size={20} className="text-white" /> : 
+               <span className={step >= i ? "text-white font-bold" : "text-gray-400 font-bold"}>{i}</span>}
+            </motion.div>
+            <span className={`absolute -bottom-7 text-[10px] font-black uppercase tracking-tighter ${step >= i ? "text-green-700" : "text-gray-400"}`}>
+              {i === 1 ? "Identify" : "Verify"}
+            </span>
           </div>
         ))}
       </div>
@@ -44,121 +71,122 @@ const RegisterForm = () => {
         {step === 1 ? (
           <motion.div
             key="step1"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="space-y-5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-4"
           >
-            <div className="text-left mb-2">
-              <h3 className="text-lg font-bold text-gray-800">Farmer Details</h3>
-              <p className="text-sm text-gray-500">Let's get your farm registered</p>
+            <div className="mb-2">
+              <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2">
+                Join the Fold <Sprout className="text-green-500" />
+              </h3>
+              <p className="text-gray-500 text-sm">Start your digital farming journey today.</p>
             </div>
 
-            {/* Name Input */}
-            <div className="relative group">
-              <User className="absolute left-4 top-4 text-gray-400 group-focus-within:text-green-600 transition-colors" size={20} />
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all"
-              />
-            </div>
+            {/* Form Inputs with Floating Effect Feel */}
+            {[
+              { id: 'name', icon: User, placeholder: 'Full Name', type: 'text' },
+              { id: 'mobile', icon: Phone, placeholder: 'Mobile Number', type: 'number' },
+              { id: 'email', icon: Mail, placeholder: 'Email Address', type: 'email' },
+            ].map((field) => (
+              <div key={field.id} className="relative group">
+                <field.icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-green-500 transition-colors" size={20} />
+                <input
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={formData[field.id]}
+                  onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border-2 border-gray-100 focus:border-green-500 focus:ring-4 focus:ring-green-500/5 outline-none transition-all font-medium shadow-sm"
+                />
+              </div>
+            ))}
 
-            {/* Mobile Input */}
-            <div className="relative group">
-              <Phone className="absolute left-4 top-4 text-gray-400 group-focus-within:text-green-600 transition-colors" size={20} />
-              <input
-                type="tel"
-                placeholder="Mobile Number"
-                value={formData.mobile}
-                onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all"
-              />
-            </div>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-4 text-gray-400 group-focus-within:text-green-600 transition-colors" size={20} />
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white outline-none transition-all"
-              />
-                
-            </div>
-
-            {/* Robot Check Card */}
+            {/* Farmer Check - Interactive Card */}
             <motion.div
               whileTap={{ scale: 0.98 }}
               onClick={() => setRobot(!robot)}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all 
-                ${robot ? "border-green-500 bg-green-50 shadow-inner" : "border-gray-200 bg-white hover:border-green-200"}`}
+              className={`group flex items-center justify-between p-5 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${
+                robot ? "border-green-500 bg-green-50/50 shadow-inner" : "border-gray-100 bg-white"
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all
-                  ${robot ? "bg-green-600 border-green-600 shadow-md shadow-green-200" : "bg-white border-gray-300"}`}
-                >
-                  {robot && <ShieldCheck size={14} className="text-white" />}
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${robot ? "bg-green-600 rotate-[360deg] scale-110 shadow-lg shadow-green-200" : "bg-gray-100"}`}>
+                  {robot ? <ShieldCheck size={20} className="text-white" /> : <Sprout size={20} className="text-gray-300" />}
                 </div>
-                <span className={`font-semibold text-sm ${robot ? "text-green-800" : "text-gray-500"}`}>
-                  I am a Farmer
-                </span>
+                <div>
+                  <p className={`font-bold text-sm ${robot ? "text-green-800" : "text-gray-500"}`}>Identity Check</p>
+                  <p className="text-xs text-gray-400">I am a proud farmer 👨‍🌾</p>
+                </div>
               </div>
-              <span className="text-2xl">👨‍🌾</span>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${robot ? "border-green-600 bg-green-600" : "border-gray-200"}`}>
+                {robot && <div className="w-2 h-2 bg-white rounded-full" />}
+              </div>
             </motion.div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
               onClick={handleNext}
-              className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-bold shadow-lg shadow-green-200 flex items-center justify-center gap-2 transition-all"
+              className={`w-full py-5 rounded-3xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl shadow-green-100
+                ${isFormValid && robot ? "bg-green-600 text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
-              <span>Register & Send OTP</span>
-              <ArrowRight size={18} />
+              Continue to Verify <ArrowRight size={20} />
             </motion.button>
           </motion.div>
         ) : (
           <motion.div
             key="step2"
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6 text-center"
+            exit={{ opacity: 0, x: -30 }}
+            className="space-y-8 text-center"
           >
-            <div className="flex justify-center">
-              <div className="p-4 bg-green-100 rounded-full text-green-600">
-                <Smartphone size={40} />
+            <div className="relative inline-block">
+              <div className="p-6 bg-green-100 rounded-[2rem] text-green-600 relative z-10">
+                <Smartphone size={44} />
+              </div>
+              <div className="absolute inset-0 bg-green-200/40 blur-2xl rounded-full scale-150 animate-pulse" />
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-black text-gray-800">Check your phone</h3>
+              <p className="text-sm text-gray-500 px-8">
+                We've sent a 6-digit code to <span className="text-green-600 font-bold">{formData.mobile}</span>
+              </p>
+            </div>
+
+            <div className="flex justify-center gap-2 max-w-[300px] mx-auto">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex-1 h-14 bg-gray-50 border-b-4 border-gray-200 rounded-xl" />
+              ))}
+              <input
+                autoFocus
+                maxLength="6"
+                className="absolute w-[240px] opacity-0 cursor-pointer"
+                placeholder="· · · · · ·"
+              />
+              <div className="absolute pointer-events-none text-2xl font-black tracking-[1.3em] pl-4">
+                {/* Visual overlay for OTP would go here */}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold text-gray-800">Verify Mobile</h3>
-              <p className="text-sm text-gray-500">Entering code sent to <span className="font-bold text-gray-700">{formData.mobile}</span></p>
+            <div className="space-y-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleSubmit}
+                className="w-full py-5 bg-gray-900 text-white rounded-[2rem] font-bold shadow-2xl"
+              >
+                Confirm & Create Account
+              </motion.button>
+
+              <button
+                onClick={() => setStep(1)}
+                className="flex items-center justify-center gap-2 mx-auto text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
+              >
+                <ChevronLeft size={16} /> Use a different number
+              </button>
             </div>
-
-            <input
-              type="text"
-              maxLength="6"
-              placeholder="· · · · · ·"
-              className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl text-center tracking-[1em] text-3xl font-black focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all"
-            />
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-green-700 text-white rounded-2xl font-bold shadow-lg shadow-green-200"
-            >
-              Create Account
-            </motion.button>
-
-            <button
-              onClick={() => setStep(1)}
-              className="text-sm font-bold text-green-600 hover:text-green-800 transition-colors uppercase tracking-widest"
-            >
-              ← Edit Details
-            </button>
           </motion.div>
         )}
       </AnimatePresence>

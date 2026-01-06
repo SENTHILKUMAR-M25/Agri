@@ -1,131 +1,178 @@
-
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Phone, ShieldCheck, ArrowRight, Smartphone, MailCheck } from "lucide-react";
+import { 
+  Mail, Phone, ShieldCheck, ArrowRight, 
+  Smartphone, MailCheck, Fingerprint, ChevronLeft 
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [identifier, setIdentifier] = useState("");
   const [robot, setRobot] = useState(false);
   const [otp, setOtp] = useState("");
 
-  // Logic to detect input type
   const isEmail = identifier.includes("@");
-  const isPhone = /^\d+$/.test(identifier.replace(/\D/g, ""));
+  const isPhone = /^[0-9]{10}$/.test(identifier.replace(/\D/g, ""));
+  const isValid = isEmail || isPhone;
 
   const handleSendOtp = () => {
-    if (!robot) {
-      alert("Please verify you are a human! 🤖");
-      return;
-    }
-
-    if (isEmail) {
-      alert(`✅ OTP has been sent to your email id: ${identifier}`);
-    } else if (isPhone) {
-      alert(`✅ OTP has been sent to your phone number: ${identifier}`);
-    } else {
-      alert("Please enter a valid Email or Phone Number");
-      return;
-    }
-
+    if (!robot) return alert("Please verify you are a human 🤖");
+    if (!isValid) return alert("Enter a valid Email or 10-digit Phone");
     setStep(2);
   };
 
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
+  };
+
   return (
-    <div className="relative">
+    <div className="relative max-w-md mx-auto min-h-[400px]">
       <AnimatePresence mode="wait">
         {step === 1 ? (
           <motion.div
             key="step1"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="mt-8 space-y-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="space-y-6"
           >
-            {/* Smart Input */}
-            <div className="relative group">
-              <div className="absolute left-4 top-4 text-gray-400 group-focus-within:text-green-600 transition-colors">
-                {isEmail ? <Mail size={20} /> : <Phone size={20} />}
+            {/* Header section inside the form for context */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <h2 className="text-2xl font-black text-gray-800">Welcome Back!</h2>
+              <p className="text-gray-500 text-sm">Login to manage your digital farm.</p>
+            </motion.div>
+
+            {/* Input Group */}
+            <motion.div variants={itemVariants} className="relative group">
+              <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${isValid ? 'text-green-600' : 'text-gray-400'}`}>
+                {isEmail ? <Mail size={22} /> : <Phone size={22} />}
               </div>
               <input
                 type="text"
                 placeholder="Email or Phone Number"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:ring-2 focus:ring-green-500 focus:bg-white focus:border-green-200 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-5 bg-white border-2 border-gray-100 rounded-3xl focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition-all font-medium text-gray-700 shadow-sm"
               />
-            </div>
+              {isValid && (
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500">
+                  <ShieldCheck size={20} />
+                </motion.div>
+              )}
+            </motion.div>
 
-            {/* Creative Robot Verification */}
+            {/* Creative Robot Check */}
             <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setRobot(!robot)}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all 
-                ${robot ? "border-green-500 bg-green-50 shadow-inner" : "border-gray-100 bg-gray-50 hover:bg-gray-100"}`}
+              className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all cursor-pointer shadow-sm
+                ${robot ? "border-green-500 bg-green-50/50" : "border-gray-100 bg-white"}`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all
-                  ${robot ? "bg-green-600 border-green-600 shadow-md shadow-green-200" : "bg-white border-gray-300"}`}
-                >
-                  {robot && <ShieldCheck size={14} className="text-white" />}
+              <div className="flex items-center gap-4">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${robot ? "bg-green-600 rotate-[360deg]" : "bg-gray-100"}`}>
+                  {robot ? <ShieldCheck size={18} className="text-white" /> : <div className="w-2 h-2 bg-gray-300 rounded-full" />}
                 </div>
-                <span className={`font-semibold text-sm ${robot ? "text-green-800" : "text-gray-500"}`}>
-                  I'm not a robot
+                <span className={`text-sm font-bold ${robot ? "text-green-800" : "text-gray-500"}`}>
+                  Secure Human Verification
                 </span>
               </div>
-              <span className="text-2xl grayscale group-hover:grayscale-0">🤖</span>
+              <span className="text-xl">🌱</span>
             </motion.div>
 
             {/* Action Button */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              variants={itemVariants}
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
               onClick={handleSendOtp}
-              className="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-2xl font-bold shadow-lg shadow-green-200 flex items-center justify-center gap-2"
+              className="w-full py-5 bg-green-600 hover:bg-green-700 text-white rounded-3xl font-bold shadow-xl shadow-green-200 flex items-center justify-center gap-3 transition-all"
             >
-              <span>Get Verification Code</span>
-              <ArrowRight size={18} />
+              Request Access <ArrowRight size={20} />
             </motion.button>
           </motion.div>
         ) : (
           <motion.div
             key="step2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="mt-8 space-y-6 text-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            className="space-y-8 py-4"
           >
-            <div className="flex justify-center mb-4">
-               <div className="p-4 bg-green-100 rounded-full text-green-600">
-                  {isEmail ? <MailCheck size={32} /> : <Smartphone size={32} />}
-               </div>
+            {/* OTP Illustration Area */}
+            <div className="relative flex justify-center mb-4">
+               <motion.div 
+                initial={{ scale: 0 }} animate={{ scale: 1 }}
+                className="p-6 bg-gradient-to-br from-green-100 to-emerald-100 rounded-[2.5rem] text-green-600 relative z-10"
+               >
+                 {isEmail ? <MailCheck size={40} /> : <Smartphone size={40} />}
+               </motion.div>
+               <div className="absolute inset-0 bg-green-200/30 blur-2xl rounded-full scale-150" />
             </div>
-            
-            <div>
-               <h3 className="text-lg font-bold text-gray-800">Enter OTP</h3>
-               <p className="text-sm text-gray-500">Code sent to {identifier}</p>
+
+            <div className="text-center">
+              <h3 className="text-2xl font-black text-gray-800">Verification</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Enter the 6-digit code sent to <br/>
+                <span className="text-green-700 font-bold">{identifier}</span>
+              </p>
             </div>
 
-            <input
-              type="text"
-              maxLength="6"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="0 0 0 0 0 0"
-              className="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl text-center tracking-[1em] text-2xl font-black focus:ring-2 focus:ring-green-500 outline-none transition-all"
-            />
+            {/* Segmented OTP Input Look */}
+            <div className="relative group max-w-[280px] mx-auto">
+              <input
+                type="text"
+                maxLength="6"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                className="w-full p-4 bg-transparent text-center tracking-[1.2em] text-3xl font-black outline-none relative z-10"
+              />
+              <div className="absolute inset-0 flex justify-between items-center -z-0 pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`w-10 h-14 border-b-4 rounded-lg transition-all 
+                    ${otp.length > i ? "border-green-500 bg-green-50" : "border-gray-200 bg-gray-50"}`} 
+                  />
+                ))}
+              </div>
+            </div>
 
-            <button className="w-full py-4 bg-green-700 text-white rounded-2xl font-bold shadow-lg shadow-green-100 active:scale-95 transition-transform">
-              Verify & Secure Login
-            </button>
+            <div className="space-y-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                   if(otp.length === 6) navigate("/home");
+                   else alert("Invalid OTP");
+                }}
+                className="w-full py-5 bg-gray-900 text-white rounded-3xl font-bold shadow-2xl flex items-center justify-center gap-3"
+              >
+                <Fingerprint size={20} /> Verify Identity
+              </motion.button>
 
-            <button
-              onClick={() => setStep(1)}
-              className="text-sm font-bold text-green-600 hover:text-green-800 transition-colors uppercase tracking-widest"
-            >
-              ← Back to Login
-            </button>
+              <button
+                onClick={() => setStep(1)}
+                className="flex items-center justify-center gap-2 w-full text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
+              >
+                <ChevronLeft size={16} /> Edit Phone / Email
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
