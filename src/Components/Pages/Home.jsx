@@ -8,8 +8,11 @@ import {
   ArrowUpRight,
   UserCircle,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Home = () => {
+    const { isAuthenticated, user } = useSelector((state) => state.auth);
+  
   const cards = [
     {
       title: "Demo Video",
@@ -62,7 +65,7 @@ const Home = () => {
             </div>
             <div>
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Welcome Back</p>
-              <h3 className="text-lg font-bold text-gray-800">Namaste, Kisan Bhai</h3>
+              <h3 className="text-lg font-bold text-gray-800">{user}</h3>
             </div>
           </div>
           <div className="hidden md:block text-right">
@@ -139,3 +142,4 @@ const Home = () => {
 };
 
 export default Home;
+

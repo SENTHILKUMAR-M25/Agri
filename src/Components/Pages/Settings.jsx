@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../Redux/Slice/authSlice';
+import { Link } from 'react-router-dom';
 
 const ProfileWebPage = () => {
      const dispatch = useDispatch();
@@ -19,19 +20,19 @@ const ProfileWebPage = () => {
     {
       title: "Account Settings",
       items: [
-        { icon: <User size={20} />, label: 'My Profile', desc: 'Manage your personal details' },
-        { icon: <MapPin size={20} />, label: 'My Farm', desc: 'View farm locations and data' },
+        { icon: <User size={20} />, path:'/profile', label: 'My Profile', desc: 'Manage your personal details' },
+        { icon: <MapPin size={20} />, path:'/farm', label: 'My Farm', desc: 'View farm locations and data' },
         // { icon: <Plant size={20} />, label: 'My Crop', desc: 'Monitor your harvest progress' },
-        { icon: <Settings size={20} />, label: 'Settings', desc: 'App preferences and security' },
+        { icon: <Settings size={20} />, path:"", label: 'Settings', desc: 'App preferences and security' },
       ]
     },
     {
       title: "Orders & Activity",
       items: [
-        { icon: <ShoppingCart size={20} />, label: 'My Cart', desc: 'Items ready for checkout' },
-        { icon: <Package size={20} />, label: 'My Order', desc: 'Track your deliveries' },
-        { icon: <Bookmark size={20} />, label: 'Saved Products', desc: 'Your wishlist' },
-        { icon: <Map size={20} />, label: 'Saved Addresses', desc: 'Manage delivery locations' },
+        { icon: <ShoppingCart size={20} />, path:"/mycart", label: 'My Cart', desc: 'Items ready for checkout' },
+        { icon: <Package size={20} />, path:"/myorder", label: 'My Order', desc: 'Track your deliveries' },
+        { icon: <Bookmark size={20} />, path:"/savedpicture", label: 'Saved Products', desc: 'Your wishlist' },
+        { icon: <Map size={20} />, path:'/address', label: 'Saved Addresses', desc: 'Manage delivery locations' },
       ]
     },
   ];
@@ -39,8 +40,7 @@ const ProfileWebPage = () => {
   return (
     <div className="min-h-screen bg-zinc-50">
      
-
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl relative top-15 mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* LEFT COLUMN: Profile & Referrals */}
@@ -113,6 +113,7 @@ const ProfileWebPage = () => {
                       key={iIdx}
                       className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-zinc-200 hover:border-[#4CAF50] hover:shadow-md transition-all text-left group"
                     >
+                      <Link to={item.path} className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-zinc-200 hover:border-[#4CAF50] hover:shadow-md transition-all text-left group w-full">
                       <div className="p-3 bg-zinc-50 rounded-xl text-[#4CAF50] group-hover:bg-[#4CAF50] group-hover:text-white transition-colors">
                         {item.icon}
                       </div>
@@ -123,6 +124,7 @@ const ProfileWebPage = () => {
                         <p className="text-xs text-zinc-500">{item.desc}</p>
                       </div>
                       <ChevronRight size={16} className="text-zinc-300" />
+                      </Link>
                     </button>
                   ))}
                 </div>

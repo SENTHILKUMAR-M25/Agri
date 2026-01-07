@@ -11,6 +11,14 @@ import Footer from './Components/Pages/Footer'
 import ProductDetail from './Components/Products/ProductDetails'
 import Mandi from './Components/Pages/Mandi'
 import Setting from './Components/Pages/Settings'
+import Products from './Components/Products/Products'
+import Profile from './Components/Account/Profile'
+import CartSection from './Components/Products/CardSection'
+import PaymentMethod from './Components/Pages/Payment'
+import MyOrders from './Components/Account/MyOrder'
+import AgriServices from './Components/Pages/Sevices'
+import ServiceDetail from './Components/Service/ServiceDetail'
+import ServiceBooking from './Components/Service/ServiceBooking'
 
 function Layout() {
   const location = useLocation();
@@ -19,7 +27,8 @@ function Layout() {
   const hideNavbar =
     location.pathname === "/auth" ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname === "/";
 
   return (
     <>
@@ -33,12 +42,21 @@ function Layout() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/products" element={<ProductPage />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/mandi" element={<Mandi />} />
         <Route path="/settings" element={<Setting />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/mycart" element={<CartSection />} />
+        <Route path="/payment" element={<PaymentMethod />} />
+        <Route path="/myorder" element={<MyOrders />} />
+        <Route path="/services" element={<AgriServices />} />
+        <Route path="/services/:id" element={<ServiceDetail />} />
+        <Route path="/services/:id/book" element={<ServiceBooking />} />
+
+
       </Routes>
-   {!hideNavbar && <Footer />}
+      {!hideNavbar && <Footer />}
 
     </>
   );
