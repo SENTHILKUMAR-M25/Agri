@@ -19,6 +19,8 @@ import MyOrders from './Components/Account/MyOrder'
 import AgriServices from './Components/Pages/Sevices'
 import ServiceDetail from './Components/Service/ServiceDetail'
 import ServiceBooking from './Components/Service/ServiceBooking'
+import AddProduct from './Components/Products/AddProduct'
+import LandingPage from './Components/Pages/LandingPage'
 
 function Layout() {
   const location = useLocation();
@@ -28,7 +30,9 @@ function Layout() {
     location.pathname === "/auth" ||
     location.pathname === "/login" ||
     location.pathname === "/register" ||
+    location.pathname === "/landingpage"||
     location.pathname === "/";
+
 
   return (
     <>
@@ -53,7 +57,9 @@ function Layout() {
         <Route path="/services" element={<AgriServices />} />
         <Route path="/services/:id" element={<ServiceDetail />} />
         <Route path="/services/:id/book" element={<ServiceBooking />} />
-
+        <Route path="/Addproduct" element={<AddProduct />} />
+        <Route path="/landingpage" element={<LandingPage />} />
+        
 
       </Routes>
       {!hideNavbar && <Footer />}

@@ -1,100 +1,159 @@
-
-
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../assets/logo.png";
 
 const SplashScreen = ({ onFinish }) => {
   const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [loadingText, setLoadingText] = useState("Initializing Core");
 
-  // 1. Subtle Parallax Effect
+  // Professional "System Check" messages
+  const messages = [
+    "Initializing Core",
+    "Securing Farm Data",
+    "Syncing Market Indices",
+    "Optimizing Ecosystem",
+    "Ready"
+  ];
+
+  useEffect(() => {
+    // Cycle through messages for a "High-Tech" feel
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < messages.length - 1) {
+        i++;
+        setLoadingText(messages[i]);
+      }
+    }, 800);
+
+    const timer = setTimeout(() => {
+      if (onFinish) onFinish();
+      navigate("/landingpage");
+    }, 4500);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, [navigate, onFinish]);
+
   const handleMouseMove = (e) => {
     setMousePos({
-      x: (e.clientX / window.innerWidth - 0.5) * 20,
-      y: (e.clientY / window.innerHeight - 0.5) * 20,
+      x: (e.clientX / window.innerWidth - 0.5) * 25,
+      y: (e.clientY / window.innerHeight - 0.5) * 25,
     });
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (onFinish) onFinish();
-      navigate("/home");
-    }, 4000); 
-
-    return () => clearTimeout(timer);
-  }, [navigate, onFinish]);
-
   return (
-    <div 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       onMouseMove={handleMouseMove}
-      className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-[#041a0b] cursor-none"
+      className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-[#020b05] cursor-none select-none"
     >
-      {/* --- BACKGROUND LAYER: Organic "Cells" --- */}
+      {/* 1. AMBIENT BACKGROUND LAYER */}
       <div 
-        className="absolute transition-transform duration-700 ease-out opacity-40"
+        className="absolute inset-0 transition-transform duration-1000 ease-out"
         style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
       >
-        <div className="absolute top-[-20vh] left-[-10vw] w-[500px] h-[500px] bg-green-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10vh] right-[-5vw] w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] animate-bounce-slow" />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-emerald-900/20 rounded-full blur-[140px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-green-900/10 rounded-full blur-[120px]" />
       </div>
 
-      {/* --- MESH GRADIENT OVERLAY --- */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
-
-      {/* --- CENTRAL CONTENT --- */}
-      <div className="z-10 relative flex flex-col items-center">
-        
-        {/* Innovative Logo Container */}
-        <div className="relative group perspective-1000">
-          {/* Animated Rings */}
-          <div className="absolute inset-0 rounded-full border border-green-500/30 animate-ping-slow scale-150" />
-          <div className="absolute inset-0 rounded-full border border-emerald-400/20 animate-ping-slow scale-[2] opacity-50" />
+      {/* 2. LOGO & CENTRAL IDENTITY */}
+      <div className="relative z-10 flex flex-col items-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative group"
+        >
+          {/* Subtle Rotating Ring */}
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-8 border border-emerald-500/10 rounded-full border-t-emerald-500/40"
+          />
           
-          <div className="relative bg-gradient-to-b from-white/10 to-transparent p-8 rounded-full backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
-            <img
+          <div className="relative p-10 rounded-[3rem] bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-2xl">
+            <motion.img
               src={logo}
               alt="Agri Kisan"
-              className="w-32 h-32 object-contain filter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-float"
+              className="w-28 h-28 object-contain brightness-110"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Brand Reveal */}
+        {/* 3. BRANDING */}
         <div className="mt-12 text-center">
-          <h1 className="overflow-hidden text-5xl font-black tracking-tighter text-white">
-            <span className="block animate-reveal-up bg-clip-text text-transparent bg-gradient-to-r from-white via-green-100 to-green-400">
-              AGRI KISAN
-            </span>
-          </h1>
+          <motion.h1 
+            initial={{ letterSpacing: "0.2em", opacity: 0 }}
+            animate={{ letterSpacing: "0.5em", opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="text-4xl font-black text-white tracking-[0.5em] ml-[0.5em]"
+          >
+            AGRI KISAN
+          </motion.h1>
           
-          <div className="flex items-center justify-center gap-3 mt-4 overflow-hidden">
-            <div className="h-[1px] w-8 bg-green-500/50 animate-stretch-width" />
-            <p className="text-xs font-bold tracking-[0.3em] text-green-400/80 uppercase animate-fade-in">
-              The Digital Seed
-            </p>
-            <div className="h-[1px] w-8 bg-green-500/50 animate-stretch-width" />
-          </div>
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent mt-4 opacity-50"
+          />
+          
+          <p className="mt-4 text-[10px] font-bold tracking-[0.4em] text-emerald-500/60 uppercase italic">
+            Precision Agriculture Ecosystem
+          </p>
         </div>
 
-        {/* Minimalist Tech Progress */}
-        <div className="mt-16 flex flex-col items-center gap-4">
-          <div className="w-64 h-[2px] bg-white/5 relative overflow-hidden rounded-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan" />
-          </div>
-          <span className="text-[10px] font-mono text-green-600 animate-pulse tracking-widest">
-            INITIALIZING ECOSYSTEM...
-          </span>
+        {/* 4. TECH PROGRESS & STATUS */}
+        <div className="mt-20 flex flex-col items-center">
+            {/* Status Text with AnimatePresence for smooth transitions */}
+            <div className="h-6 flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                    <motion.span
+                        key={loadingText}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="text-[9px] font-mono text-emerald-400 tracking-[0.3em] uppercase"
+                    >
+                        {loadingText}
+                    </motion.span>
+                </AnimatePresence>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-48 h-[1px] bg-white/5 mt-4 relative overflow-hidden">
+                <motion.div 
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "100%" }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+                />
+            </div>
         </div>
       </div>
 
-      {/* Interactive Cursor Follower (Optional) */}
+      {/* 5. PRECISION CURSOR (Crosshair Style) */}
       <div 
-        className="fixed w-8 h-8 border border-green-400/50 rounded-full pointer-events-none transition-all duration-150 ease-out z-50 mix-blend-screen"
-        style={{ left: `${mousePos.x * 2 + window.innerWidth/2}px`, top: `${mousePos.y * 2 + window.innerHeight/2}px`, transform: 'translate(-50%, -50%)' }}
-      />
-    </div>
+        className="fixed w-10 h-10 pointer-events-none z-50 mix-blend-difference"
+        style={{ 
+            left: `${mousePos.x * 0.5 + window.innerWidth/2}px`, 
+            top: `${mousePos.y * 0.5 + window.innerHeight/2}px`, 
+            transform: 'translate(-50%, -50%)' 
+        }}
+      >
+        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-emerald-500/40" />
+        <div className="absolute left-1/2 top-0 h-full w-[1px] bg-emerald-500/40" />
+        <div className="absolute inset-0 border border-emerald-500/20 rounded-full" />
+      </div>
+    </motion.div>
   );
 };
 

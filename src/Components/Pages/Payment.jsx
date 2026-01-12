@@ -1,149 +1,231 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { 
-  CreditCard, Smartphone, Truck, ChevronRight, 
-  ShieldCheck, TicketPercent, Wallet, CheckCircle2, Lock
+  Smartphone, Wallet, CheckCircle2, Lock, CreditCard, ArrowLeft,
+  Banknote, Receipt, Fingerprint, ShieldCheck, Tag, Info, MapPin
 } from "lucide-react";
 
 const paymentMethods = [
-  { id: "gpay", label: "Google Pay", icon: Smartphone },
-  { id: "phonepe", label: "PhonePe", icon: Wallet },
-  { id: "paytm", label: "Paytm", icon: CreditCard },
-  { id: "upi", label: "Other UPI", icon: Smartphone },
+  { id: "gpay", label: "Google Pay", icon: Smartphone, desc: "Direct UPI Transfer" },
+  { id: "phonepe", label: "PhonePe", icon: Wallet, desc: "Instant Secure Pay" },
+  { id: "cards", label: "Debit / Credit Card", icon: CreditCard, desc: "Visa, Mastercard, RuPay" },
+  { id: "cod", label: "Cash on Delivery", icon: Banknote, desc: "Pay at your doorstep" },
 ];
 
-const PaymentMethod = () => {
-  const [selected, setSelected] = useState("cod");
+const ProfessionalPayment = () => {
+  const navigate = useNavigate();
+  const cartItems = useSelector((state) => state.cart.items);
+  
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.qty, 0);
+  const deliveryFee = subtotal > 500 || subtotal === 0 ? 0 : 40;
+  const totalAmount = subtotal + deliveryFee;
+
+  const [selected, setSelected] = useState("gpay");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+
+  const handlePayment = () => {
+    if (cartItems.length === 0) return;
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setIsDone(true);
+    }, 2500);
+  };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] flex items-center justify-center p-0 sm:p-6 lg:p-12">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-6xl bg-white sm:rounded-[3rem] shadow-2xl shadow-slate-300/50 overflow-hidden flex flex-col lg:flex-row min-h-screen sm:min-h-[600px]"
-      >
-        
-        {/* --- LEFT SIDE: ORDER SUMMARY (Blue/Dark Section) --- */}
-        {/* Visible as top bar on mobile, left sidebar on laptop */}
-        <div className="lg:w-2/5 bg-slate-900 p-8 lg:p-12 text-white flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-8 text-green-400">
-              <ShieldCheck size={20} />
-              <span className="text-xs font-black uppercase tracking-[0.2em]">Secure Checkout</span>
-            </div>
-            
-            <h2 className="text-3xl lg:text-4xl font-black mb-2 leading-tight">Review your <br/> Purchase.</h2>
-            <p className="text-slate-400 text-sm font-medium mb-10">Order #AK-99210</p>
-
-            <div className="space-y-6">
-              <div className="flex justify-between items-center pb-4 border-b border-slate-800">
-                <span className="text-slate-400 text-sm">Subtotal</span>
-                <span className="font-bold">₹5,949</span>
-              </div>
-              <div className="flex justify-between items-center pb-4 border-b border-slate-800">
-                <span className="text-slate-400 text-sm">H Kisan Discount</span>
-                <span className="font-bold text-green-400">-₹500</span>
-              </div>
-              <div className="flex justify-between items-center pt-2">
-                <span className="text-lg font-bold">Total Amount</span>
-                <span className="text-3xl font-black text-green-50">₹5,449</span>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#FDFDFD] text-slate-900 font-sans pb-20">
+      
+      {/* 1. TOP PROGRESS BAR */}
+      <nav className="w-full border-b border-slate-100 bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+          <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-semibold text-sm">
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Cart
+          </button>
+          
+          <div className="hidden md:flex items-center gap-10">
+            <Step number="1" label="Cart" completed />
+            <div className="w-12 h-[1px] bg-slate-200" />
+            <Step number="2" label="Payment" active />
+            <div className="w-12 h-[1px] bg-slate-200" />
+            <Step number="3" label="Confirmation" />
           </div>
 
-          <div className="hidden lg:flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl mt-12">
-            <Lock className="text-slate-500" size={18} />
-            <p className="text-[10px] text-slate-400 leading-relaxed uppercase font-bold tracking-widest">
-              Your data is encrypted with 256-bit SSL security protocol.
-            </p>
+          <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
+            <Lock size={14} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">256-Bit SSL Secured</span>
           </div>
         </div>
+      </nav>
 
-        {/* --- RIGHT SIDE: PAYMENT SELECTION --- */}
-        <div className="lg:w-3/5 p-6 lg:p-12 flex flex-col">
-          <div className="mb-8">
-            <h3 className="text-xl font-black text-slate-800 mb-2">Payment Method</h3>
-            <p className="text-slate-400 text-sm">Choose how you want to pay for your harvest.</p>
-          </div>
+      <div className="max-w-7xl mx-auto px-6 mt-12">
+        <AnimatePresence mode="wait">
+          {!isDone ? (
+            <motion.div 
+              key="payment-content"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="grid lg:grid-cols-12 gap-12"
+            >
+              {/* LEFT: SELECTION */}
+              <div className="lg:col-span-7">
+                <header className="mb-10">
+                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">Payment Method</h1>
+                  <p className="text-slate-500">Choose how you'd like to complete your purchase safely.</p>
+                </header>
 
-          <div className="space-y-8 flex-1">
-            {/* Digital Wallets Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-              {paymentMethods.map((method) => (
-                <button
-                  key={method.id}
-                  onClick={() => setSelected(method.id)}
-                  className={`flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all group
-                    ${selected === method.id 
-                      ? "border-green-600 bg-green-50 shadow-md scale-95" 
-                      : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"}`}
-                >
-                  <div className={`p-3 rounded-2xl mb-3 transition-colors 
-                    ${selected === method.id ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                    <method.icon size={24} />
+                <div className="grid gap-4 mb-8">
+                  {paymentMethods.map((method) => (
+                    <PaymentOption 
+                      key={method.id}
+                      method={method}
+                      isSelected={selected === method.id}
+                      onSelect={() => setSelected(method.id)}
+                    />
+                  ))}
+                </div>
+
+                {/* TRUST SECTION */}
+                <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 flex gap-5 items-start">
+                  <div className="p-3 bg-white rounded-2xl shadow-sm">
+                    <ShieldCheck className="text-emerald-500" size={24} />
                   </div>
-                  <span className={`text-[11px] font-black uppercase tracking-tight text-center
-                    ${selected === method.id ? 'text-green-700' : 'text-slate-500'}`}>
-                    {method.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Pay on Delivery Option */}
-            <button
-              onClick={() => setSelected("cod")}
-              className={`w-full flex items-center justify-between p-6 rounded-[2.5rem] border-2 transition-all
-                ${selected === "cod" 
-                  ? "border-green-600 bg-green-50" 
-                  : "border-slate-100 bg-white hover:border-slate-200"}`}
-            >
-              <div className="flex items-center gap-5">
-                <div className={`p-4 rounded-[1.5rem] ${selected === "cod" ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                  <Truck size={28} />
-                </div>
-                <div className="text-left">
-                  <span className={`block font-black text-base uppercase tracking-tight ${selected === "cod" ? 'text-green-900' : 'text-slate-700'}`}>
-                    Pay on Delivery
-                  </span>
-                  <p className="text-xs text-slate-400 font-medium">No advance payment required</p>
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">Agri-Kisan Purchase Protection</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                      Your transaction is protected. If your order doesn't arrive or isn't as described, 
+                      we guarantee a full refund within 7 business days.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all
-                ${selected === "cod" ? 'border-green-600 bg-green-600' : 'border-slate-200'}`}>
-                {selected === "cod" && <CheckCircle2 className="text-white" size={18} />}
+
+              {/* RIGHT: SUMMARY */}
+              <div className="lg:col-span-5">
+                <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-sm sticky top-32">
+                  <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
+                    <Receipt size={20} className="text-slate-400" /> Order Summary
+                  </h3>
+
+                  {/* ITEM LIST */}
+                  <div className="space-y-4 mb-8 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex justify-between items-center text-sm">
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-lg text-[10px] font-bold text-slate-400 border border-slate-100">
+                            {item.qty}x
+                          </span>
+                          <span className="font-medium text-slate-700">{item.name}</span>
+                        </div>
+                        <span className="font-bold">₹{(item.price * item.qty).toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* PROMO CODE */}
+                  <div className="relative mb-8">
+                    <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input 
+                      type="text" 
+                      placeholder="Promo Code" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-emerald-500 transition-all"
+                    />
+                  </div>
+
+                  {/* CALCULATION */}
+                  <div className="space-y-3 border-t border-slate-50 pt-6">
+                    <div className="flex justify-between text-sm text-slate-500 font-medium">
+                      <span>Subtotal</span>
+                      <span>₹{subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-slate-500 font-medium">
+                      <span>Logistics Fee</span>
+                      <span className={deliveryFee === 0 ? "text-emerald-600 font-bold" : ""}>
+                        {deliveryFee === 0 ? "Complimentary" : `₹${deliveryFee}`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-dashed border-slate-100">
+                      <span className="font-bold text-slate-900">Total Payable</span>
+                      <span className="text-3xl font-black text-slate-900 tracking-tighter">₹{totalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    disabled={isProcessing}
+                    onClick={handlePayment}
+                    className="w-full mt-8 py-5 bg-slate-900 hover:bg-black text-white rounded-2xl font-bold transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3 disabled:bg-slate-300"
+                  >
+                    {isProcessing ? (
+                      <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      `Secure Payment · ₹${totalAmount.toLocaleString()}`
+                    )}
+                  </button>
+
+                  <p className="mt-6 text-[10px] text-center text-slate-400 font-medium uppercase tracking-widest flex items-center justify-center gap-2">
+                    <Fingerprint size={12} /> Biometric & 3D Secure Verification Enabled
+                  </p>
+                </div>
               </div>
-            </button>
-          </div>
-
-          {/* Action Button */}
-          <div className="mt-12">
-            <button 
-              disabled={isProcessing}
-              onClick={() => setIsProcessing(true)}
-              className="w-full relative overflow-hidden py-6 bg-green-600 hover:bg-green-700 text-white rounded-[2rem] text-lg font-black transition-all shadow-xl shadow-green-100 active:scale-[0.98] disabled:opacity-70"
+            </motion.div>
+          ) : (
+            /* SUCCESS STATE */
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-2xl mx-auto bg-white border border-slate-100 rounded-[3rem] p-16 text-center shadow-2xl"
             >
-              <AnimatePresence mode="wait">
-                {isProcessing ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-3">
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Processing Order...</span>
-                  </motion.div>
-                ) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-2">
-                    <span>Pay ₹5,449 & Place Order</span>
-                    <ChevronRight size={22} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-          </div>
-        </div>
-
-      </motion.div>
+              <div className="w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-8 rotate-12 shadow-lg shadow-emerald-200">
+                <CheckCircle2 size={40} className="text-white -rotate-12" />
+              </div>
+              <h2 className="text-4xl font-bold mb-4">Transaction Successful</h2>
+              <p className="text-slate-500 mb-10 leading-relaxed">
+                Your order <span className="text-slate-900 font-bold">#AK-202688</span> has been confirmed. 
+                Our local logistics partner will contact you shortly for the delivery schedule.
+              </p>
+              <div className="flex gap-4">
+                <button onClick={() => navigate("/myorder")} className="flex-1 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all">Track Order</button>
+                <button onClick={() => navigate("/")} className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all">Return to Hub</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
 
-export default PaymentMethod;
+/* Helper Components */
+
+const Step = ({ number, label, active, completed }) => (
+  <div className={`flex items-center gap-2 ${active ? 'opacity-100' : 'opacity-40'}`}>
+    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border-2 
+      ${completed ? 'bg-emerald-500 border-emerald-500 text-white' : active ? 'border-slate-900 text-slate-900' : 'border-slate-300 text-slate-400'}`}>
+      {completed ? <CheckCircle2 size={12} /> : number}
+    </div>
+    <span className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-slate-900' : 'text-slate-400'}`}>{label}</span>
+  </div>
+);
+
+const PaymentOption = ({ method, isSelected, onSelect }) => (
+  <label className={`group cursor-pointer flex items-center justify-between p-6 rounded-3xl border-2 transition-all 
+    ${isSelected ? 'border-emerald-500 bg-emerald-50/30 ring-4 ring-emerald-50' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
+    <div className="flex items-center gap-5">
+      <input type="radio" checked={isSelected} onChange={onSelect} className="w-5 h-5 accent-emerald-500 cursor-pointer" />
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors 
+        ${isSelected ? 'bg-white text-emerald-500' : 'bg-slate-50 text-slate-400'}`}>
+        <method.icon size={22} />
+      </div>
+      <div>
+        <p className="font-bold text-slate-900">{method.label}</p>
+        <p className="text-xs text-slate-500">{method.desc}</p>
+      </div>
+    </div>
+  </label>
+);
+
+export default ProfessionalPayment;

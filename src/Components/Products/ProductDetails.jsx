@@ -1,144 +1,174 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingCart,
   Leaf,
   Star,
   MapPin,
-  Phone,
-  User,
-  Truck
+  Truck,
+  ShieldCheck,
+  ArrowRight,
+  TrendingUp,
+  Award,
+  CheckCircle,
+  ArrowLeft,
+  Share2,
+  Heart
 } from "lucide-react";
+import { toast, Toaster } from "react-hot-toast";
+
+// Redux slice
+import { addToCart } from "../Redux/Slice/cartSlice";
+import { toggleSave } from "../Redux/Slice/savedSlice";
+
+// Product data
 import agriProducts from "./ProductsData";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = agriProducts.find(p => p.id === Number(id));
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Get product
+  const product = agriProducts.find((p) => p.id === Number(id));
+
+  // Get saved products from Redux
+  const savedProducts = useSelector((state) => state.saved.items);
+
+  // Check if this product is saved
+  const isSaved = savedProducts.some((p) => p.id === product?.id);
+
+  // Local state
   const [qty, setQty] = useState(1);
+  const [activeTab, setActiveTab] = useState("description");
+  const [liked, setLiked] = useState(isSaved);
+
+  useEffect(() => {
+    setLiked(isSaved);
+  }, [isSaved]);
 
   if (!product) {
-    return <div className="p-10 text-center">Product not found</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#fcfdfa]">
+        <h2 className="text-2xl font-bold text-slate-800">Product Not Found</h2>
+        <button
+          onClick={() => navigate("/products")}
+          className="mt-4 text-green-600 font-bold"
+        >
+          Return to Marketplace
+        </button>
+      </div>
+    );
   }
 
+  // Add to cart
+  const handleAddToCart = () => {
+    dispatch(addToCart({ ...product, qty }));
+    toast.success(`${qty} ${product.unit} added to cart! 🌱`, {
+      style: { borderRadius: "12px", background: "#059669", color: "#fff" },
+    });
+  };
+
+  // Like / Save toggle
+  const handleToggleSave = () => {
+    dispatch(toggleSave(product));
+    setLiked(!liked);
+
+    toast.success(
+      !liked
+        ? "Added to Liked Resources ❤️"
+        : "Removed from Liked Resources 💔",
+      {
+        style: { borderRadius: "12px", background: "#334155", color: "#fff" },
+      }
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-12">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+    <div className="min-h-screen bg-[#fcfdfa] pb-20">
+      <Toaster position="bottom-center" />
 
-        {/* 🔹 Product Image */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-3xl p-6 shadow-xl"
+      {/* Top Navigation */}
+      <div className="max-w-7xl mx-auto px-6 pt-18 flex justify-between items-center">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-slate-500 hover:text-green-600 font-bold text-xs uppercase tracking-widest"
         >
-          <img
-            src={product.img}
-            alt={product.name}
-            className="w-full h-[350px] object-contain"
-          />
-        </motion.div>
+          <ArrowLeft size={16} /> Back to Seeds
+        </button>
 
-        {/* 🔹 Product Info */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-3xl p-8 shadow-xl"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Leaf className="text-green-600" size={18} />
-            <span className="text-xs font-bold uppercase text-green-600">
-              Organic Certified
-            </span>
-          </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigator.clipboard.writeText(window.location.href)}
+            className="p-3 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-blue-500 transition-all shadow-sm"
+          >
+            <Share2 size={18} />
+          </button>
 
-          <h1 className="text-3xl font-black text-slate-800">
+          <button
+            onClick={handleToggleSave}
+            className={`p-3 bg-white border border-slate-100 rounded-2xl transition-all shadow-sm ${
+              liked ? "text-red-500" : "text-slate-400"
+            }`}
+          >
+            <Heart size={18} fill={liked ? "currentColor" : "none"} />
+          </button>
+        </div>
+      </div>
+
+      {/* Product Details */}
+      <div className="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-12 gap-12">
+        {/* Left: Image */}
+        <div className="lg:col-span-5 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100 relative overflow-hidden"
+          >
+            <img
+              src={product.img}
+              alt={product.name}
+              className="w-full h-[400px] object-contain transition-transform group-hover:scale-110 duration-700"
+            />
+          </motion.div>
+        </div>
+
+        {/* Right: Details */}
+        <div className="lg:col-span-7">
+          <h1 className="text-5xl font-black text-slate-900 mb-4">
             {product.name}
           </h1>
 
-          <div className="flex items-center gap-1 mt-2">
-            {[1,2,3,4].map(i => (
-              <Star key={i} size={14} className="text-amber-400" fill="currentColor" />
-            ))}
-            <Star size={14} className="text-slate-200" />
-            <span className="text-xs text-slate-400 ml-2">(120 Reviews)</span>
-          </div>
-
-          <p className="mt-6 text-slate-600 leading-relaxed">
-            Freshly harvested <b>{product.name}</b> directly from trusted farmers.
-            Quality tested and suitable for bulk & retail purchase.
-          </p>
-
-          <div className="mt-6">
-            <p className="text-sm text-slate-400 font-bold uppercase">
-              Price per Quintal
-            </p>
-            <p className="text-3xl font-black text-green-700">
-              ₹{product.price}
-            </p>
-          </div>
-
-          {/* Quantity */}
-          <div className="mt-6 flex items-center gap-4">
-            <span className="font-bold text-slate-700">Quantity:</span>
-            <input
-              type="number"
-              min="1"
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-              className="w-20 border rounded-xl px-3 py-2"
-            />
-          </div>
-
-          {/* Buttons */}
-          <div className="mt-8 flex gap-4">
-            <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2">
-              <ShoppingCart size={18} />
-              Add to Cart
-            </button>
-
-            <button className="flex-1 border-2 border-green-600 text-green-700 py-4 rounded-2xl font-black">
-              Buy Now
-            </button>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* 🔹 Seller Details */}
-      <div className="max-w-6xl mx-auto mt-12 bg-white rounded-3xl p-8 shadow-xl">
-        <h2 className="text-2xl font-black text-slate-800 mb-6">
-          Seller Information
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-6 text-slate-700">
-          <div className="flex items-center gap-3">
-            <User className="text-green-600" />
-            <div>
-              <p className="font-bold">Farmer Name</p>
-              <p className="text-sm text-slate-500">R. Senthil Kumar</p>
+          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-2xl font-black">₹{product.price}/{product.unit}</p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <MapPin className="text-green-600" />
-            <div>
-              <p className="font-bold">Location</p>
-              <p className="text-sm text-slate-500">Erode, Tamil Nadu</p>
-            </div>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center bg-slate-50 rounded-2xl p-1 border border-slate-100">
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  className="w-12 h-12 font-bold text-slate-400 hover:text-green-600"
+                >
+                  −
+                </button>
+                <span className="w-8 text-center font-black">{qty}</span>
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  className="w-12 h-12 font-bold text-slate-400 hover:text-green-600"
+                >
+                  +
+                </button>
+              </div>
 
-          <div className="flex items-center gap-3">
-            <Phone className="text-green-600" />
-            <div>
-              <p className="font-bold">Contact</p>
-              <p className="text-sm text-slate-500">+91 9XXXXXXXXX</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Truck className="text-green-600" />
-            <div>
-              <p className="font-bold">Delivery</p>
-              <p className="text-sm text-slate-500">Within 2–4 Days</p>
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white h-14 rounded-2xl font-black shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95"
+              >
+                <ShoppingCart size={20} /> Add to Cart
+              </button>
             </div>
           </div>
         </div>
