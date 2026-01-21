@@ -21,6 +21,18 @@ import ServiceDetail from './Components/Service/ServiceDetail'
 import ServiceBooking from './Components/Service/ServiceBooking'
 import AddProduct from './Components/Products/AddProduct'
 import LandingPage from './Components/Pages/LandingPage'
+import Dialysis from './Components/Diagonistics/Dialysis'
+import SchemeCard from './Components/Schemes/SchemesCard'
+import SchemeDetail from './Components/Schemes/SchemesDetails'
+import Schemes from './Components/Schemes/Schemes'
+import AddScheme from './Components/Schemes/AddScheme'
+import ScrollToTop from './Components/Pages/ScrolTop'
+import VideoCarousel from './Components/Videos/VideoCarousal'
+import Videos from './Components/Videos/Videos'
+import VideoPlay from './Components/Videos/Play'
+import AddVideo from './Components/Videos/AddVideo'
+import AddPriceForm from './Components/PriceChart/AddPrice'
+import PriceHistory from './Components/PriceChart/PriceHistory'
 
 function Layout() {
   const location = useLocation();
@@ -30,12 +42,13 @@ function Layout() {
     location.pathname === "/auth" ||
     location.pathname === "/login" ||
     location.pathname === "/register" ||
-    location.pathname === "/landingpage"||
+    location.pathname === "/landingpage" ||
     location.pathname === "/";
 
 
   return (
     <>
+      <ScrollToTop />
       {!hideNavbar && <Navbar />}
 
       <Routes>
@@ -59,8 +72,16 @@ function Layout() {
         <Route path="/services/:id/book" element={<ServiceBooking />} />
         <Route path="/Addproduct" element={<AddProduct />} />
         <Route path="/landingpage" element={<LandingPage />} />
-        
-
+        <Route path="/diagnosis" element={<Dialysis />} />
+        <Route path="/scheme" element={<Schemes />} />
+        <Route path="/scheme/:schemeId" element={<SchemeDetail />} />
+        <Route path="/add-scheme" element={<AddScheme />} />
+        <Route path="/" element={<VideoCarousel />} />
+        <Route path="/videos" element={<Videos />} />
+        <Route path="/video/:id" element={<VideoPlay />} />
+        <Route path="/add-video" element={<AddVideo />} />
+        <Route path="/add-price" element={<AddPriceForm />} />
+        <Route path="/price-history/:name/:location" element={<PriceHistory />} />
       </Routes>
       {!hideNavbar && <Footer />}
 

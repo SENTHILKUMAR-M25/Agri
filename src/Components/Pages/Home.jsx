@@ -9,8 +9,12 @@ import {
   UserCircle,
   Sprout,
   TrendingUp,
+  Leaf,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import SchemeCarousel from "../Schemes/SchemeCarousal";
+import VideoCarousel from "../Videos/VideoCarousal";
+import PriceMonitoring from "../PriceChart/Chart";
 
 const Home = () => {
   // 🔹 Get user data from Redux
@@ -22,8 +26,8 @@ const Home = () => {
     hour < 12
       ? "Good Morning"
       : hour < 18
-      ? "Good Afternoon"
-      : "Good Evening";
+        ? "Good Afternoon"
+        : "Good Evening";
 
   // Cards - can later be made dynamic from Redux if needed
   const cards = [
@@ -59,6 +63,15 @@ const Home = () => {
       color: "from-violet-600 to-purple-500",
       stats: "1.2k Active Leads",
     },
+    {
+      title: "Plant Disease Diagnosis",
+      desc: "AI-powered plant and leaf disease detection with treatment guidance.",
+      icon: <Leaf size={28} />,
+      path: "/diagnosis",
+      color: "from-green-600 to-emerald-500",
+      stats: "95% Detection Accuracy",
+    }
+
   ];
 
   return (
@@ -141,7 +154,9 @@ const Home = () => {
             </motion.div>
           ))}
         </div>
-
+          <SchemeCarousel />
+          <VideoCarousel />
+          <PriceMonitoring />
         {/* --- Footer --- */}
         <footer className="mt-24 mb-10">
           <div className="bg-slate-900 rounded-[3rem] p-12 text-center relative overflow-hidden">
@@ -154,9 +169,7 @@ const Home = () => {
               Explore All Tools
             </button>
           </div>
-          <p className="text-center text-slate-400 mt-12 text-sm">
-            © 2026 Agri Kisan Hub • <span className="italic font-serif">Made for the soil, by the soil.</span>
-          </p>
+        
         </footer>
       </div>
     </div>

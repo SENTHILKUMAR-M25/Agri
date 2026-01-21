@@ -1,6 +1,7 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ShoppingCart, Heart, Star, Leaf, MapPin } from "lucide-react";
+
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingCart, Heart, Star, Leaf, MapPin, Plus, Minus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../Redux/Slice/cartSlice";
@@ -9,127 +10,128 @@ import { toggleSave } from "../Redux/Slice/savedSlice";
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isHovered, setIsHovered] = useState(false);
 
-  // 🔹 REDUX WISHLIST STATE
   const savedItems = useSelector((state) => state.saved.items);
   const isLiked = savedItems.some((item) => item.id === product.id);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
     dispatch(addToCart(product));
   };
 
-  const handleLike = () => {
+  const handleLike = (e) => {
+    e.stopPropagation();
     dispatch(toggleSave(product));
+    // Implementation of your instruction: details stored in saved knowledge when liked
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -12 }}
-      className="relative group w-full max-w-[320px] bg-white/70 backdrop-blur-xl rounded-[3rem] p-4 border border-white shadow-[0_20px_50px_rgba(0,45,0,0.05)] hover:shadow-[0_40px_80px_rgba(22,101,52,0.15)] transition-all duration-500"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -8 }}
+      className="relative group w-full max-w-[340px] bg-white rounded-[2.5rem] p-3 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] transition-all duration-700 ease-out overflow-hidden"
     >
-      {/* 🟢 TOP ACTION BAR */}
-      <div className="absolute top-6 inset-x-8 z-20 flex justify-between items-center">
-        {product.organic && (
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="bg-green-600/90 backdrop-blur-md text-white px-3 py-1.5 rounded-2xl text-[10px] font-bold flex items-center gap-1.5 shadow-lg shadow-green-200"
-          >
-            <Leaf size={12} fill="white" className="animate-pulse" />
-            FRESH
-          </motion.div>
-        )}
+      {/* 🟢 AMBIENT BACKGROUND GLOW */}
+      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-emerald-50 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-        <button
-          onClick={handleLike}
-          className="p-2.5 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm hover:scale-110 active:scale-90 transition-all text-slate-400"
-        >
-          <Heart
-            size={18}
-            className={isLiked ? "fill-red-500 text-red-500" : ""}
-          />
-        </button>
-      </div>
-
-      {/* 🖼 FLOATING IMAGE CONTAINER */}
-      <div
-        onClick={() => navigate(`/product/${product.id}`)}
-        className="relative h-64 w-full cursor-pointer mt-2"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-100/50 rounded-[2.5rem] rotate-3 group-hover:rotate-0 transition-transform duration-500" />
-
-        <motion.img
-          whileHover={{ scale: 1.1, rotate: -5 }}
-          src={product.img}
-          alt={product.name}
-          className="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.1)] group-hover:drop-shadow-[0_30px_40px_rgba(22,101,52,0.2)] transition-all"
-        />
-
-        <div className="absolute bottom-4 left-4 z-20 bg-white/80 backdrop-blur-md px-3 py-1 rounded-xl flex items-center gap-1 border border-white/50 shadow-sm">
-          <MapPin size={10} className="text-green-600" />
-          <span className="text-[10px] font-bold text-slate-600 uppercase tracking-tighter">
-            Nashik, MH
-          </span>
-        </div>
-      </div>
-
-      {/* 📦 CONTENT SECTION */}
-      <div className="mt-4 px-3 pb-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">
-            {product.name}
-          </h3>
-
-          <div className="flex items-center bg-amber-50 px-2 py-1 rounded-lg">
-            <Star size={12} className="fill-amber-400 text-amber-400" />
-            <span className="text-[10px] font-black text-amber-700 ml-1">
-              4.9
-            </span>
-          </div>
-        </div>
-
-        {/* Freshness Meter */}
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "85%" }}
-              className="h-full bg-gradient-to-r from-orange-400 to-green-500"
-            />
-          </div>
-          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-            Freshness
-          </span>
-        </div>
-
-        {/* 💰 PRICING & CTA */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">
-              Price
-            </p>
-            <p className="text-2xl font-black text-slate-900">
-              ₹{product.price}
-              <span className="text-sm font-medium text-slate-400">
-                /{product.unit}
-              </span>
-            </p>
+      {/* 🖼 VISUAL ASSET SECTION */}
+      <div className="relative h-72 w-full overflow-hidden rounded-[2rem] bg-slate-50/50 flex items-center justify-center">
+        {/* Top Badges */}
+        <div className="absolute top-4 inset-x-4 z-20 flex justify-between items-start">
+          <div className="flex flex-col gap-2">
+            {product.organic && (
+              <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-100 shadow-sm flex items-center gap-1.5">
+                <Leaf size={10} className="text-emerald-500 fill-emerald-500" />
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">Organic</span>
+              </div>
+            )}
+            <div className="bg-emerald-500 text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest w-fit shadow-lg shadow-emerald-200/50">
+              In Stock
+            </div>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleAddToCart}
-            className="h-14 w-14 bg-slate-900 hover:bg-green-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl transition-colors"
+            whileTap={{ scale: 0.8 }}
+            onClick={handleLike}
+            className={`p-3 rounded-2xl transition-all shadow-sm ${
+              isLiked ? "bg-red-50 text-red-500" : "bg-white text-slate-300"
+            }`}
           >
-            <ShoppingCart size={22} />
+            <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
           </motion.button>
+        </div>
+
+        {/* Product Image with Parallax */}
+        <motion.img
+          animate={isHovered ? { scale: 1.1, y: -10, rotate: 2 } : { scale: 1, y: 0, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          src={product.img}
+          alt={product.name}
+          onClick={() => navigate(`/product/${product.id}`)}
+          className="w-4/5 h-4/5 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.12)] cursor-pointer z-10"
+        />
+
+        {/* Origin Label */}
+        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 bg-slate-900/5 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+          <MapPin size={10} className="text-slate-600" />
+          <span className="text-[9px] font-bold text-slate-600 tracking-tight uppercase">Direct from Nashik</span>
         </div>
       </div>
 
-      <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-green-200/20 blur-3xl -z-10 group-hover:bg-green-400/30 transition-colors" />
+      {/* 📦 INFORMATION SUITE */}
+      <div className="mt-6 px-4 pb-4">
+        <div className="flex justify-between items-end mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex text-amber-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={10} fill="currentColor" />
+                ))}
+              </div>
+              <span className="text-[10px] font-bold text-slate-400">(2.4k)</span>
+            </div>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+              {product.name}
+            </h3>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Per {product.unit}</span>
+            <span className="text-2xl font-black text-emerald-600">₹{product.price}</span>
+          </div>
+        </div>
+
+        {/* Dynamic Freshness Indicator */}
+        <div className="p-3 bg-slate-50 rounded-[1.5rem] flex items-center justify-between mb-6 border border-slate-100/50">
+          <div className="flex items-center gap-2">
+             <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
+             <span className="text-[10px] font-black text-slate-500 uppercase">Super Fresh</span>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">98% Quality Score</span>
+        </div>
+
+        {/* 💰 ACTION CTA: Quantitative Button */}
+        <div className="flex gap-2">
+            <motion.button
+                onClick={() => navigate(`/product/${product.id}`)}
+                className="flex-1 h-14 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold rounded-[1.2rem] transition-colors text-sm"
+            >
+                Details
+            </motion.button>
+            
+            <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleAddToCart}
+                className="h-14 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[1.2rem] flex items-center justify-center gap-3 shadow-lg shadow-emerald-200 transition-all group/btn"
+            >
+                <ShoppingCart size={20} />
+                <span className="font-bold text-sm">Add</span>
+            </motion.button>
+        </div>
+      </div>
     </motion.div>
   );
 };

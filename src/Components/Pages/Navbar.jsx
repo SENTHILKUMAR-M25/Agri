@@ -10,7 +10,7 @@ const navItems = [
   { name: "Products", path: "/products" },
   { name: "Feed", path: "/mycart" },
   { name: "My Corp", path: "/profile" },
-  { name: "Mandi", path: "/mandi" },
+  { name: "Mandi", path: "/scheme" },
 ];
 
 const Navbar = () => {

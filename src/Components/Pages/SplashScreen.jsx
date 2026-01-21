@@ -29,7 +29,7 @@ const SplashScreen = ({ onFinish }) => {
 
     const timer = setTimeout(() => {
       if (onFinish) onFinish();
-      navigate("/landingpage");
+      navigate("/home");
     }, 4500);
 
     return () => {
