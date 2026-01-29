@@ -8,9 +8,9 @@ import logo from '../../assets/logo.png'
 const navItems = [
   { name: "Home", path: "/home" },
   { name: "Products", path: "/products" },
-  { name: "Feed", path: "/mycart" },
+  { name: "Feed", path: "/feed" },
   { name: "My Corp", path: "/profile" },
-  { name: "Mandi", path: "/scheme" },
+  { name: "Mandi", path: "/mandi" },
 ];
 
 const Navbar = () => {
@@ -57,8 +57,7 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="" className="h-10 w-10" />
           <h1 className="font-extrabold text-xl tracking-tight">
-            <span className="text-green-600">Agri</span>
-            <span className={scrolled ? "text-zinc-800" : "text-zinc-900"}>Kisan</span>
+            <span className="text-green-600">BHUMMI</span>
           </h1>
         </Link>
 

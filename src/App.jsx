@@ -17,6 +17,7 @@ import CartSection from './Components/Products/CardSection'
 import PaymentMethod from './Components/Pages/Payment'
 import MyOrders from './Components/Account/MyOrder'
 import AgriServices from './Components/Pages/Sevices'
+import Feed from './Components/Pages/Feed'
 import ServiceDetail from './Components/Service/ServiceDetail'
 import ServiceBooking from './Components/Service/ServiceBooking'
 import AddProduct from './Components/Products/AddProduct'
@@ -82,6 +83,8 @@ function Layout() {
         <Route path="/add-video" element={<AddVideo />} />
         <Route path="/add-price" element={<AddPriceForm />} />
         <Route path="/price-history/:name/:location" element={<PriceHistory />} />
+        <Route path="/feed" element={<Feed />} />
+        
       </Routes>
       {!hideNavbar && <Footer />}
 

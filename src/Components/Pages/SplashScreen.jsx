@@ -96,7 +96,7 @@ const SplashScreen = ({ onFinish }) => {
             transition={{ duration: 1.5, ease: "easeOut" }}
             className="text-4xl font-black text-white tracking-[0.5em] ml-[0.5em]"
           >
-            AGRI KISAN
+            BHUMMI
           </motion.h1>
           
           <motion.div 
