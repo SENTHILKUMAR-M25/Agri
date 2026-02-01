@@ -34,6 +34,8 @@ import VideoPlay from './Components/Videos/Play'
 import AddVideo from './Components/Videos/AddVideo'
 import AddPriceForm from './Components/PriceChart/AddPrice'
 import PriceHistory from './Components/PriceChart/PriceHistory'
+import DiseasePage from './Components/Disease/Diagonis'
+import MyCropDashboard from './Components/Pages/MyCrop'
 
 function Layout() {
   const location = useLocation();
@@ -84,6 +86,8 @@ function Layout() {
         <Route path="/add-price" element={<AddPriceForm />} />
         <Route path="/price-history/:name/:location" element={<PriceHistory />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/Desisse" element={<DiseasePage />} />
+        <Route path="/mycrop" element={<MyCropDashboard />} />
         
       </Routes>
       {!hideNavbar && <Footer />}

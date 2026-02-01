@@ -9,7 +9,7 @@ const navItems = [
   { name: "Home", path: "/home" },
   { name: "Products", path: "/products" },
   { name: "Feed", path: "/feed" },
-  { name: "My Corp", path: "/profile" },
+  { name: "My Corp", path: "/mycrop" },
   { name: "Mandi", path: "/mandi" },
 ];
 
@@ -55,9 +55,9 @@ const Navbar = () => {
 
         {/* Logo Section */}
         <Link to="/" className="flex items-center gap-2 group">
-            <img src={logo} alt="" className="h-10 w-10" />
-          <h1 className="font-extrabold text-xl tracking-tight">
-            <span className="text-green-600">BHUMMI</span>
+          <img src={logo} alt="" className="h-10 w-10" />
+          <h1 className="font-black text-3xl tracking-tighter text-zinc-900 uppercase italic">
+            BHU<span className="text-green-600">MMI</span>
           </h1>
         </Link>
 

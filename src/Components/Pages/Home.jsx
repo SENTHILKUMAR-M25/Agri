@@ -569,7 +569,7 @@ const Home = () => {
       desc:
         "AI-powered plant and leaf disease detection with treatment guidance.",
       icon: <Leaf size={28} />,
-      path: "/diagnosis",
+      path: "/Desisse",
       color: "from-green-600 to-emerald-500",
       stats: "95% Detection Accuracy",
     },
